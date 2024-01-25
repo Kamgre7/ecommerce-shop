@@ -9,9 +9,13 @@
   "extends": [
     "airbnb-base",
     "airbnb-typescript/base",
-    "prettier",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:node/recommended",
+    "plugin:import/recommended",
+    "plugin:promise/recommended",
+    "prettier",
+    "plugin:prettier/recommended"
   ],
   "plugins": ["node", "import", "@typescript-eslint", "prettier"],
   "parserOptions": {
