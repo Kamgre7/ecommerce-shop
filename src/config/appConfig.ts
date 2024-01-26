@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { object, string } from 'zod';
 
-export const AppSchema = z.object({
-  port: z.string().transform((arg) => (Number.isNaN(parseInt(arg, 10)) ? 3000 : Number(arg))),
-  host: z.string().min(1),
-  hostName: z.string().min(1),
+export const AppSchema = object({
+  port: string().transform((arg) => (Number.isNaN(parseInt(arg, 10)) ? 3000 : Number(arg))),
+  host: string().min(1),
+  hostName: string().min(1),
 });
 
 export const appConfig = AppSchema.parse({
