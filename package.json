@@ -6,10 +6,15 @@
   "scripts": {
     "start": "ts-node -r dotenv/config index.ts",
     "start:dev": "tsnd -r dotenv/config index.ts",
+    "dbInit": "ts-node -r dotenv/config ./src/database/scripts/databaseInit.ts",
+    "migrations": "ts-node -r dotenv/config ./src/database/runMigrations.ts",
     "build": "tsc",
     "format": "npx prettier --write .",
     "eslint": "npx eslint . --ext .ts",
     "prepare": "husky"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   },
   "keywords": [],
   "author": "",
