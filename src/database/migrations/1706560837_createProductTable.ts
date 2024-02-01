@@ -7,7 +7,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
     .addColumn('name', 'varchar(25)', (col) => col.unique().notNull())
     .addColumn('description', 'varchar(1000)', (col) => col.notNull())
-    .addColumn('price', 'integer', (col) => col.notNull())
+    .addColumn('price', 'decimal', (col) => col.notNull())
     .addColumn('sku', 'varchar(5)', (col) => col.notNull())
     .addColumn('category_id', 'uuid', (col) => col.references('categories.id'))
     .addColumn('inventory_id', 'uuid', (col) => col.unique().references('products_inventory.id'))
