@@ -1,4 +1,7 @@
+import { types } from 'pg';
 import { coerce, object, string, z } from 'zod';
+
+types.setTypeParser(1700, (val) => parseFloat(val));
 
 export const DbSchema = object({
   dbName: string().min(1),
