@@ -1,13 +1,18 @@
 import { inject, injectable } from 'inversify';
+import { jsonObjectFrom } from 'kysely/helpers/postgres';
+import { ExpressionBuilder } from 'kysely';
+import { plainToClass } from 'class-transformer';
 import { database } from '../../../database/database';
 import { NewProduct } from '../schemas/createProductValidationSchema';
 import { ProductDb } from '../types/productTypes';
 import { IProduct, Product } from '../models/Product';
 import { TYPES } from '../../../ioc/types/types';
 import { IErrorMapper } from '../../../errors/errorMapper';
+import { Database } from '../../../database/schemas/databaseSchema';
 
 export interface IProductsRepository {
   create(newProduct: NewProduct): Promise<IProduct>;
+  findById(id: string): Promise<IProduct | null>;
 }
 
 @injectable()
@@ -43,29 +48,74 @@ export class ProductsRepository implements IProductsRepository {
         .returningAll()
         .executeTakeFirstOrThrow();
 
-      return this.mapDataFromDb(product);
+      return plainToClass(Product, { ...this.snakeToCamelCase(product) });
     } catch (err) {
       throw this.errorMapper.mapRepositoryError(err);
     }
   }
 
-  private mapDataFromDb(product: ProductDb): IProduct {
+  async findById(id: string): Promise<IProduct | null> {
+    const product = await this.db
+      .selectFrom(this.productsTable)
+      .where('id', '=', id)
+      .selectAll()
+      .select((eb) => [this.withInventory(eb), this.withCategory(eb)])
+      .executeTakeFirst();
+
+    if (!product) {
+      return null;
+    }
+
+    const { category, inventory, ...productDb } = product;
+
+    return plainToClass(Product, { ...this.snakeToCamelCase(productDb), category, inventory });
+  }
+
+  private withInventory(eb: ExpressionBuilder<Database, 'products'>) {
+    return jsonObjectFrom(
+      eb
+        .selectFrom('products_inventory')
+        .select([
+          'products_inventory.id',
+          'products_inventory.quantity',
+          'products_inventory.created_at as createdAt',
+          'products_inventory.updated_at as updatedAt',
+        ])
+        .whereRef('products_inventory.id', '=', 'products.inventory_id'),
+    ).as('inventory');
+  }
+
+  private withCategory(eb: ExpressionBuilder<Database, 'products'>) {
+    return jsonObjectFrom(
+      eb
+        .selectFrom('categories')
+        .select([
+          'categories.id',
+          'categories.name',
+          'categories.description',
+          'categories.created_at as createdAt',
+          'categories.updated_at as updatedAt',
+          'categories.deleted_at as deletedAt',
+        ])
+        .whereRef('categories.id', '=', 'products.category_id'),
+    ).as('category');
+  }
+
+  private snakeToCamelCase(product: ProductDb) {
     const {
-      category_id: categoryId,
-      inventory_id: inventoryId,
+      category_id: category,
+      inventory_id: inventory,
       created_at: createdAt,
       updated_at: updatedAt,
       deleted_at: deletedAt,
       ...rest
     } = product;
 
-    return new Product({
+    return {
       ...rest,
-      categoryId,
-      inventoryId,
       createdAt,
       deletedAt,
       updatedAt,
-    });
+    };
   }
 }
