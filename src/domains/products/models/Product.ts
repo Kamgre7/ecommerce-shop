@@ -1,15 +1,21 @@
+import { Exclude, Type } from 'class-transformer';
+import { Category, ICategory } from '../../categories/models/Category';
+import { IProductInventory, ProductInventory } from './ProductInventory';
+
 export interface IProduct {
   id: string;
   name: string;
   description: string;
   price: number;
   sku: string;
-  categoryId: string;
-  inventoryId: string;
+  category: ICategory | null;
+  inventory: IProductInventory | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
 }
+
+export type ProductData = Omit<IProduct, 'category' | 'inventory'>;
 
 export class Product implements IProduct {
   id: string;
@@ -17,22 +23,19 @@ export class Product implements IProduct {
   description: string;
   price: number;
   sku: string;
-  categoryId: string;
-  inventoryId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
 
-  constructor(productInfo: IProduct) {
-    this.id = productInfo.id;
-    this.name = productInfo.name;
-    this.description = productInfo.description;
-    this.price = productInfo.price;
-    this.sku = productInfo.sku;
-    this.categoryId = productInfo.categoryId;
-    this.inventoryId = productInfo.inventoryId;
-    this.createdAt = productInfo.createdAt;
-    this.deletedAt = productInfo.deletedAt;
-    this.updatedAt = productInfo.updatedAt;
-  }
+  @Type(() => Category)
+  category: ICategory | null = null;
+
+  @Type(() => ProductInventory)
+  inventory: IProductInventory | null = null;
+
+  @Exclude()
+  createdAt: Date;
+
+  @Exclude()
+  updatedAt: Date;
+
+  @Exclude()
+  deletedAt: Date | null;
 }
