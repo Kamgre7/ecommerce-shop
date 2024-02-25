@@ -3,5 +3,7 @@ export const TYPES = {
   ProductsServiceToken: Symbol.for('IProductsService'),
   ProductsRepositoryToken: Symbol.for('IProductsRepository'),
 
+  ProductsInventoryRepositoryToken: Symbol.for('IProductsInventoryRepository'),
+
   ErrorMapperToken: Symbol.for('IErrorMapper'),
 };
