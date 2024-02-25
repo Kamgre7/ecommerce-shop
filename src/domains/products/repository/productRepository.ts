@@ -9,10 +9,12 @@ import { IProduct, Product } from '../models/Product';
 import { TYPES } from '../../../ioc/types/types';
 import { IErrorMapper } from '../../../errors/errorMapper';
 import { Database } from '../../../database/schemas/databaseSchema';
+import { ProductUpdateData } from '../schemas/updateProductValidationSchema';
 
 export interface IProductsRepository {
   create(newProduct: NewProduct): Promise<IProduct>;
   findById(id: string): Promise<IProduct | null>;
+  update(productData: ProductUpdateData, productId: string): Promise<IProduct | null>;
 }
 
 @injectable()
@@ -69,6 +71,27 @@ export class ProductsRepository implements IProductsRepository {
     const { category, inventory, ...productDb } = product;
 
     return plainToClass(Product, { ...this.snakeToCamelCase(productDb), category, inventory });
+  }
+
+  async update(productData: ProductUpdateData, productId: string): Promise<IProduct | null> {
+    const { category, ...product } = productData;
+
+    try {
+      const updatedProduct = await this.db
+        .updateTable(this.productsTable)
+        .set({ ...product })
+        .where('products.id', '=', productId)
+        .returningAll()
+        .executeTakeFirst();
+
+      if (!updatedProduct) {
+        return null;
+      }
+
+      return plainToClass(Product, { ...this.snakeToCamelCase(updatedProduct) });
+    } catch (err) {
+      throw this.errorMapper.mapRepositoryError(err);
+    }
   }
 
   private withInventory(eb: ExpressionBuilder<Database, 'products'>) {
