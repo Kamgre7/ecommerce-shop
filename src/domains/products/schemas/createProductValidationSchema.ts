@@ -1,6 +1,6 @@
 import { number, object, string, z } from 'zod';
 
-const CreateProductBodySchema = object({
+export const CreateProductBodySchema = object({
   name: string().min(3).max(25),
   description: string().min(3).max(1000),
   price: number().positive(),
