@@ -10,10 +10,12 @@ import { TYPES } from '../../../ioc/types/types';
 import { IErrorMapper } from '../../../errors/errorMapper';
 import { Database } from '../../../database/schemas/databaseSchema';
 import { ProductUpdateData } from '../schemas/updateProductValidationSchema';
+import { ProductsCriteria } from '../schemas/findProductByCriteriaValidationSchema';
 
 export interface IProductsRepository {
   create(newProduct: NewProduct): Promise<IProduct>;
   findById(id: string): Promise<IProduct | null>;
+  findByCriteria(criteria: ProductsCriteria): Promise<IProduct[]>;
   update(productData: ProductUpdateData, productId: string): Promise<IProduct | null>;
 }
 
@@ -71,6 +73,32 @@ export class ProductsRepository implements IProductsRepository {
     const { category, inventory, ...productDb } = product;
 
     return plainToClass(Product, { ...this.snakeToCamelCase(productDb), category, inventory });
+  }
+
+  async findByCriteria(criteria: ProductsCriteria): Promise<IProduct[]> {
+    const { name, category, priceFrom, priceTo, sku } = criteria;
+
+    let query = this.db.selectFrom(this.productsTable);
+
+    if (name) query = query.where('name', 'ilike', `%${name}%`);
+    if (category) query = query.where('category_id', '=', category);
+    if (priceFrom) query = query.where('price', '>=', priceFrom);
+    if (priceTo) query = query.where('price', '<=', priceTo);
+    if (sku) query = query.where('sku', 'ilike', `%${sku}%`);
+
+    const products = await query
+      .selectAll()
+      .select((eb) => [this.withInventory(eb), this.withCategory(eb)])
+      .distinctOn('id')
+      .execute();
+
+    return products.map((product) =>
+      plainToClass(Product, {
+        ...this.snakeToCamelCase(product),
+        category: product.category,
+        inventory: product.inventory,
+      }),
+    );
   }
 
   async update(productData: ProductUpdateData, productId: string): Promise<IProduct | null> {
