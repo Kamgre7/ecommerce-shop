@@ -1,6 +1,6 @@
 import { coerce, object, string, z } from 'zod';
 
-const FindProductByCriteriaQuerySchema = object({
+export const FindProductByCriteriaQuerySchema = object({
   name: string().trim().min(1).max(25).optional(),
   priceFrom: coerce.number().nonnegative().optional(),
   priceTo: coerce.number().positive().optional(),
