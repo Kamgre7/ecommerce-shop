@@ -7,10 +7,12 @@ import { NotFoundError } from '../../../errors/notFoundError';
 import { ProductUpdateData } from '../schemas/updateProductValidationSchema';
 import { IProductsInventoryRepository } from '../repository/productInventoryRepository';
 import { BadRequestError } from '../../../errors/badRequestError';
+import { ProductsCriteria } from '../schemas/findProductByCriteriaValidationSchema';
 
 export interface IProductsService {
   create(newProduct: NewProduct): Promise<IProduct>;
   findById(id: string): Promise<IProduct>;
+  findByCriteria(criteria: ProductsCriteria): Promise<IProduct[]>;
   update(productData: ProductUpdateData, id: string): Promise<IProduct>;
 
   updateInventory(inventoryId: string, value: number): Promise<void>;
@@ -37,6 +39,10 @@ export class ProductsService implements IProductsService {
     }
 
     return product;
+  }
+
+  async findByCriteria(criteria: ProductsCriteria): Promise<IProduct[]> {
+    return this.productsRepository.findByCriteria(criteria);
   }
 
   async update(productData: ProductUpdateData, id: string): Promise<IProduct> {
