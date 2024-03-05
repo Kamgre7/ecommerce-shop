@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { jsonObjectFrom } from 'kysely/helpers/postgres';
-import { ExpressionBuilder } from 'kysely';
+import { ExpressionBuilder, sql } from 'kysely';
 import { plainToClass } from 'class-transformer';
 import { database } from '../../../database/database';
 import { NewProduct } from '../schemas/createProductValidationSchema';
@@ -17,6 +17,7 @@ export interface IProductsRepository {
   findById(id: string): Promise<IProduct | null>;
   findByCriteria(criteria: ProductsCriteria): Promise<IProduct[]>;
   update(productData: ProductUpdateData, productId: string): Promise<IProduct | null>;
+  softDelete(productId: string): Promise<boolean>;
 }
 
 @injectable()
@@ -62,6 +63,7 @@ export class ProductsRepository implements IProductsRepository {
     const product = await this.db
       .selectFrom(this.productsTable)
       .where('id', '=', id)
+      .where('products.deleted_at', 'is', null)
       .selectAll()
       .select((eb) => [this.withInventory(eb), this.withCategory(eb)])
       .executeTakeFirst();
@@ -87,6 +89,7 @@ export class ProductsRepository implements IProductsRepository {
     if (sku) query = query.where('sku', 'ilike', `%${sku}%`);
 
     const products = await query
+      .where('products.deleted_at', 'is', null)
       .selectAll()
       .select((eb) => [this.withInventory(eb), this.withCategory(eb)])
       .distinctOn('id')
@@ -109,6 +112,7 @@ export class ProductsRepository implements IProductsRepository {
         .updateTable(this.productsTable)
         .set({ ...product })
         .where('products.id', '=', productId)
+        .where('products.deleted_at', 'is', null)
         .returningAll()
         .executeTakeFirst();
 
@@ -117,6 +121,25 @@ export class ProductsRepository implements IProductsRepository {
       }
 
       return plainToClass(Product, { ...this.snakeToCamelCase(updatedProduct) });
+    } catch (err) {
+      throw this.errorMapper.mapRepositoryError(err);
+    }
+  }
+
+  async softDelete(productId: string): Promise<boolean> {
+    try {
+      const dbResponse = await this.db
+        .updateTable(this.productsTable)
+        .set({
+          deleted_at: sql`now()`,
+        })
+        .where('products.id', '=', productId)
+        .where('products.deleted_at', 'is', null)
+        .executeTakeFirst();
+
+      const numberOfDeletedRows = Number(dbResponse.numUpdatedRows.toString());
+
+      return numberOfDeletedRows > 0;
     } catch (err) {
       throw this.errorMapper.mapRepositoryError(err);
     }
