@@ -14,6 +14,7 @@ export interface IProductsService {
   findById(id: string): Promise<IProduct>;
   findByCriteria(criteria: ProductsCriteria): Promise<IProduct[]>;
   update(productData: ProductUpdateData, id: string): Promise<IProduct>;
+  softDelete(id: string): Promise<void>;
 
   updateInventory(inventoryId: string, value: number): Promise<void>;
 }
@@ -53,6 +54,14 @@ export class ProductsService implements IProductsService {
     }
 
     return product;
+  }
+
+  async softDelete(id: string): Promise<void> {
+    const isDeleted = await this.productsRepository.softDelete(id);
+
+    if (!isDeleted) {
+      throw new NotFoundError('Product not found');
+    }
   }
 
   async updateInventory(inventoryId: string, value: number): Promise<void> {

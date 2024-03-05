@@ -26,4 +26,4 @@ productsRouter
   .route('/:id')
   .get(requestValidator(FindByIdProductSchema), productsController.findById)
   .patch(requestValidator(UpdateProductSchema), productsController.update)
-  .delete(requestValidator(DeleteProductSchema));
+  .delete(requestValidator(DeleteProductSchema), productsController.delete);

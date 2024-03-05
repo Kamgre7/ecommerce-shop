@@ -11,12 +11,14 @@ import {
   FindByCriteriaProductReq,
   FindProductByCriteriaQuerySchema,
 } from '../schemas/findProductByCriteriaValidationSchema';
+import { DeleteProductReq } from '../schemas/deleteProductValidationSchema';
 
 export interface IProductsController {
   create(req: ParsedRequest<CreateProductReq>, res: Response): Promise<void>;
   findById(req: ParsedRequest<FindByIdProductReq>, res: Response): Promise<void>;
   findByCriteria(req: ParsedRequest<FindByCriteriaProductReq>, res: Response): Promise<void>;
   update(req: ParsedRequest<UpdateProductReq>, res: Response): Promise<void>;
+  delete(req: ParsedRequest<DeleteProductReq>, res: Response): Promise<void>;
   updateInventory(req: ParsedRequest<UpdateProductInventoryReq>, res: Response): Promise<void>;
 }
 
@@ -61,6 +63,12 @@ export class ProductsController implements IProductsController {
     res.status(200).json({
       product,
     });
+  };
+
+  delete = async (req: ParsedRequest<DeleteProductReq>, res: Response): Promise<void> => {
+    await this.productsService.softDelete(req.params.id);
+
+    res.sendStatus(204);
   };
 
   updateInventory = async (req: ParsedRequest<UpdateProductInventoryReq>, res: Response): Promise<void> => {
