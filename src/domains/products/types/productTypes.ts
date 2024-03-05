@@ -8,7 +8,7 @@ export interface ProductDb {
   updated_at: Date;
   category_id: string;
   inventory_id: string;
-  deleted_at: Date;
+  deleted_at: Date | null;
 }
 
 export interface ProductInventoryDb {
