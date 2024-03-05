@@ -10,5 +10,5 @@ export interface ProductsTable {
   inventory_id: string;
   created_at: Generated<Date>;
   updated_at: Generated<Date>;
-  deleted_at: Generated<Date>;
+  deleted_at: Generated<Date> | null;
 }
