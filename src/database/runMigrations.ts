@@ -2,7 +2,7 @@ import * as path from 'path';
 import { promises as fs } from 'fs';
 import { Migrator, FileMigrationProvider, Kysely } from 'kysely';
 import { database } from './database';
-import { Database } from './schemas/database.schema';
+import { Database } from './schemas/databaseSchema';
 
 async function migrateToLatest(db: Kysely<Database>) {
   const migrator = new Migrator({
