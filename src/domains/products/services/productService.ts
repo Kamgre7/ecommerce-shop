@@ -8,6 +8,7 @@ import { ProductUpdateData } from '../schemas/updateProductValidationSchema';
 import { IProductsInventoryRepository } from '../repository/productInventoryRepository';
 import { BadRequestError } from '../../../errors/badRequestError';
 import { ProductsCriteria } from '../schemas/findProductByCriteriaValidationSchema';
+import { ICategoriesRepository } from '../../categories/repository/categoryRepository';
 
 export interface IProductsService {
   create(newProduct: NewProduct): Promise<IProduct>;
@@ -26,10 +27,20 @@ export class ProductsService implements IProductsService {
     private readonly productsRepository: IProductsRepository,
     @inject(TYPES.ProductsInventoryRepositoryToken)
     private readonly productsInventoryRepository: IProductsInventoryRepository,
+    @inject(TYPES.CategoriesRepositoryToken)
+    private readonly categoriesRepository: ICategoriesRepository,
   ) {}
 
   async create(newProduct: NewProduct): Promise<IProduct> {
-    return this.productsRepository.create(newProduct);
+    const categoryExist = await this.categoriesRepository.findById(newProduct.category);
+
+    if (!categoryExist) {
+      throw new BadRequestError('Category not found');
+    }
+
+    const product = await this.productsRepository.create(newProduct);
+
+    return product;
   }
 
   async findById(id: string): Promise<IProduct> {
