@@ -9,5 +9,5 @@ export const CreateCategorySchema = object({
   body: CreateCategoryBodySchema,
 });
 
-export type CreateProductReq = z.infer<typeof CreateCategorySchema>;
+export type CreateCategoryReq = z.infer<typeof CreateCategorySchema>;
 export type NewCategory = z.infer<typeof CreateCategoryBodySchema>;
