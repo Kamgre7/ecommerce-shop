@@ -38,7 +38,9 @@ export class ProductsService implements IProductsService {
       throw new BadRequestError('Category not found');
     }
 
-    return this.productsRepository.create(newProduct);
+    const product = await this.productsRepository.create(newProduct);
+
+    return product;
   }
 
   async findById(id: string): Promise<IProduct> {
