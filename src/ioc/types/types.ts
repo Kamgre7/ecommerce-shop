@@ -5,5 +5,9 @@ export const TYPES = {
 
   ProductsInventoryRepositoryToken: Symbol.for('IProductsInventoryRepository'),
 
+  CategoriesRepositoryToken: Symbol.for('ICategoriesRepository'),
+  CategoriesServiceToken: Symbol.for('ICategoriesService'),
+  CategoriesControllerToken: Symbol.for('ICategoriesController'),
+
   ErrorMapperToken: Symbol.for('IErrorMapper'),
 };
