@@ -16,9 +16,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('password', 'varchar', (col) => col.notNull())
     .addColumn('role', sql`"UserRole"`, (col) => col.defaultTo(ROLE.USER))
     .addColumn('gender', sql`"GenderType"`, (col) => col.notNull())
-    .addColumn('createdAt', 'timestamp', (col) => col.defaultTo(sql`now()`))
-    .addColumn('updatedAt', 'timestamp', (col) => col.defaultTo(sql`now()`))
-    .addColumn('deletedAt', 'timestamp', (col) => col.defaultTo(null))
+    .addColumn('created_at', 'timestamp', (col) => col.defaultTo(sql`now()`))
+    .addColumn('updated_at', 'timestamp', (col) => col.defaultTo(sql`now()`))
+    .addColumn('deleted_at', 'timestamp', (col) => col.defaultTo(null))
     .execute();
 }
 

@@ -10,7 +10,7 @@ export interface UsersTable {
   password: string;
   gender: GenderType;
   role: Generated<RoleType>;
-  createdAt: Generated<Date>;
-  updatedAt: Generated<Date>;
-  deletedAt: Generated<Date> | null;
+  created_at: Generated<Date>;
+  updated_at: Generated<Date>;
+  deleted_at: Generated<Date> | null;
 }
