@@ -11,6 +11,7 @@ import {
 import { CategoriesRepository, ICategoriesRepository } from '../domains/categories/repository/categoryRepository';
 import { CategoriesService, ICategoriesService } from '../domains/categories/services/categoryService';
 import { CategoryController, ICategoriesController } from '../domains/categories/controllers/categoryController';
+import { IPasswordManager, PasswordManager } from '../domains/passwordManager/passwordManager';
 
 export const container = new Container();
 
@@ -26,6 +27,9 @@ container.bind<IProductsInventoryRepository>(TYPES.ProductsInventoryRepositoryTo
 container.bind<ICategoriesController>(TYPES.CategoriesControllerToken).to(CategoryController);
 container.bind<ICategoriesService>(TYPES.CategoriesServiceToken).to(CategoriesService);
 container.bind<ICategoriesRepository>(TYPES.CategoriesRepositoryToken).to(CategoriesRepository);
+
+// Password Manager
+container.bind<IPasswordManager>(TYPES.PasswordManagerToken).to(PasswordManager);
 
 // ErrorMapper
 container.bind<IErrorMapper>(TYPES.ErrorMapperToken).to(ErrorMapper);

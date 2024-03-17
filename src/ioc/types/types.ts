@@ -9,5 +9,7 @@ export const TYPES = {
   CategoriesServiceToken: Symbol.for('ICategoriesService'),
   CategoriesControllerToken: Symbol.for('ICategoriesController'),
 
+  PasswordManagerToken: Symbol.for('IPasswordManager'),
+
   ErrorMapperToken: Symbol.for('IErrorMapper'),
 };
