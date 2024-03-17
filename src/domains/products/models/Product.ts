@@ -15,8 +15,6 @@ export interface IProduct {
   deletedAt: Date | null;
 }
 
-export type ProductData = Omit<IProduct, 'category' | 'inventory'>;
-
 export class Product implements IProduct {
   id: string;
   name: string;

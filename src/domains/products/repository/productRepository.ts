@@ -63,7 +63,7 @@ export class ProductsRepository implements IProductsRepository {
     const product = await this.db
       .selectFrom(this.productsTable)
       .where('id', '=', id)
-      .where('products.deleted_at', 'is', null)
+      .where('deleted_at', 'is', null)
       .selectAll()
       .select((eb) => [this.withInventory(eb), this.withCategory(eb)])
       .executeTakeFirst();
@@ -89,7 +89,7 @@ export class ProductsRepository implements IProductsRepository {
     if (sku) query = query.where('sku', 'ilike', `%${sku}%`);
 
     const products = await query
-      .where('products.deleted_at', 'is', null)
+      .where('deleted_at', 'is', null)
       .selectAll()
       .select((eb) => [this.withInventory(eb), this.withCategory(eb)])
       .distinctOn('id')
@@ -111,8 +111,8 @@ export class ProductsRepository implements IProductsRepository {
       const updatedProduct = await this.db
         .updateTable(this.productsTable)
         .set({ ...product })
-        .where('products.id', '=', productId)
-        .where('products.deleted_at', 'is', null)
+        .where('id', '=', productId)
+        .where('deleted_at', 'is', null)
         .returningAll()
         .executeTakeFirst();
 
@@ -133,8 +133,8 @@ export class ProductsRepository implements IProductsRepository {
         .set({
           deleted_at: sql`now()`,
         })
-        .where('products.id', '=', productId)
-        .where('products.deleted_at', 'is', null)
+        .where('id', '=', productId)
+        .where('deleted_at', 'is', null)
         .executeTakeFirst();
 
       const numberOfDeletedRows = Number(dbResponse.numUpdatedRows.toString());
