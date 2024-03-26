@@ -12,6 +12,9 @@ import { CategoriesRepository, ICategoriesRepository } from '../domains/categori
 import { CategoriesService, ICategoriesService } from '../domains/categories/services/categoryService';
 import { CategoryController, ICategoriesController } from '../domains/categories/controllers/categoryController';
 import { IPasswordManager, PasswordManager } from '../domains/passwordManager/passwordManager';
+import { IUsersRepository, UsersRepository } from '../domains/user/repository/userRepository';
+import { IUsersService, UsersService } from '../domains/user/services/userService';
+import { IUsersController, UsersController } from '../domains/user/controllers/userController';
 
 export const container = new Container();
 
@@ -30,6 +33,11 @@ container.bind<ICategoriesRepository>(TYPES.CategoriesRepositoryToken).to(Catego
 
 // Password Manager
 container.bind<IPasswordManager>(TYPES.PasswordManagerToken).to(PasswordManager);
+
+// Users
+container.bind<IUsersController>(TYPES.UsersControllerToken).to(UsersController);
+container.bind<IUsersService>(TYPES.UsersServiceToken).to(UsersService);
+container.bind<IUsersRepository>(TYPES.UsersRepositoryToken).to(UsersRepository);
 
 // ErrorMapper
 container.bind<IErrorMapper>(TYPES.ErrorMapperToken).to(ErrorMapper);
